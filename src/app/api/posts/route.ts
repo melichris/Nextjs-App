@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
       create: {
         email: body.authorEmail || "dev@example.com",
         name: body.authorName || "Dev User",
+        username: body.authorEmail?.split("@")[0] || "devuser",
         role: "ADMIN",
       },
     });

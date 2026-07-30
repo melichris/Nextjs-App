@@ -23,6 +23,7 @@ export default async function PostsPage() {
               title={post.title}
               content={post.content}
               authorName={post.author.name ?? post.author.email}
+              authorUsername={post.author.username}
               createdAt={post.createdAt}
             />
           ))}

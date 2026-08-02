@@ -7,7 +7,7 @@ export default auth((req) => {
 
   if (pathname.startsWith("/dashboard")) {
     if (!session?.user) {
-      return NextResponse.redirect(new URL("/api/auth/signin", req.url));
+      return NextResponse.redirect(new URL("/login", req.url));
     }
 
     if (
@@ -21,5 +21,4 @@ export default auth((req) => {
 
 export const config = {
   matcher: ["/dashboard/:path*"],
-  runtime: "nodejs",
 };

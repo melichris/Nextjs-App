@@ -37,7 +37,7 @@ export default async function DashboardPostsPage() {
       </div>
 
       {posts.length === 0 ? (
-        <p className="text-gray-500">You haven't written any posts yet.</p>
+        <p className="text-gray-500">You have not written any posts yet.</p>
       ) : (
         <div className="space-y-3">
           {posts.map((post) => (

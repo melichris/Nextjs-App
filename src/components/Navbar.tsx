@@ -38,11 +38,8 @@ export async function Navbar() {
 
           {session?.user ? (
             <>
-              <Link
-                href="/posts/new"
-                className="text-gray-600 hover:text-gray-900"
-              >
-                New Post
+              <Link href="/dashboard/posts" className="text-gray-600 hover:text-gray-900">
+                Dashboard
               </Link>
               <span className="text-gray-500">
                 {session.user.name ?? session.user.username}
@@ -50,12 +47,7 @@ export async function Navbar() {
                   <span className="ml-1 text-xs text-blue-600">(admin)</span>
                 )}
               </span>
-              <form
-                action={async () => {
-                  "use server";
-                  await signOut();
-                }}
-              >
+              <form action={async () => { "use server"; await signOut(); }}>
                 <button className="flex items-center gap-1.5 text-gray-600 hover:text-gray-900">
                   <LogOut className="w-4 h-4" />
                   Sign out

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -29,9 +30,28 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
 // PUT /api/posts/[slug] - Update a post by slug
 export async function PUT(req: NextRequest, { params }: Params) {
+  const session = await auth();
+
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { slug } = await params;
     const body = await req.json();
+
+    const existingPost = await prisma.post.findUnique({ where: { slug } });
+
+    if (!existingPost) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    const isOwner = existingPost.authorId === session.user.id;
+    const isAdmin = session.user.role === "ADMIN";
+
+    if (!isOwner && !isAdmin) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     const post = await prisma.post.update({
       where: { slug },
@@ -55,10 +75,29 @@ export async function PUT(req: NextRequest, { params }: Params) {
   }
 }
 
-// DELETE /api/posts/[slug] - Delete a post by slug
+// DELETE - same ownership rule as PUT
 export async function DELETE(_req: NextRequest, { params }: Params) {
+  const session = await auth();
+
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { slug } = await params;
+
+    const existingPost = await prisma.post.findUnique({ where: { slug } });
+
+    if (!existingPost) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    const isOwner = existingPost.authorId === session.user.id;
+    const isAdmin = session.user.role === "ADMIN";
+
+    if (!isOwner && !isAdmin) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     await prisma.post.delete({ where: { slug } });
 

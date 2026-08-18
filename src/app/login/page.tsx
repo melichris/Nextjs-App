@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { createDatabaseSession } from "@/lib/session";
 import { signIn } from "@/auth";
+import { headers } from "next/headers";
+import { loginRateLimiter } from "@/lib/rateLimit";
 
 function GitHubIcon() {
   return (
@@ -28,29 +30,41 @@ type Props = {
   searchParams: Promise<{ error?: string }>;
 };
 
-export default async function LoginPage({ searchParams }: Props) {
-  const { error } = await searchParams;
+async function login(formData: FormData) {
+  "use server";
 
-  async function login(formData: FormData) {
-    "use server";
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
 
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-
-    const user = await prisma.user.findUnique({ where: { email } });
-
-    if (!user || !user.password) {
-      redirect("/login?error=invalid-credentials");
-    }
-
-    const passwordMatches = await bcrypt.compare(password, user.password);
-    if (!passwordMatches) {
-      redirect("/login?error=invalid-credentials");
-    }
-
-    await createDatabaseSession(user.id);
-    redirect("/");
+  try {
+    await loginRateLimiter.consume(ip);
+  } catch {
+    redirect("/login?error=too-many-attempts");
   }
+
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  if (!user || !user.password) {
+    redirect("/login?error=invalid-credentials");
+  }
+
+  const passwordMatches = await bcrypt.compare(password, user.password);
+  if (!passwordMatches) {
+    redirect("/login?error=invalid-credentials");
+  }
+
+  await loginRateLimiter.delete(ip);
+  await createDatabaseSession(user.id);
+  redirect("/");
+}
+
+// 1. Wrap the UI layout inside a default page component function
+export default async function LoginPage({ searchParams }: Props) {
+  // 2. Await your asynchronous Next.js searchParams object
+  const { error } = await searchParams;
 
   return (
     <div className="mx-auto max-w-sm px-4 py-16">
@@ -59,6 +73,13 @@ export default async function LoginPage({ searchParams }: Props) {
       {error === "invalid-credentials" && (
         <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
           Incorrect email or password.
+        </p>
+      )}
+
+      {/* 3. Handle the structural rate-limiting edge case error if you wish */}
+      {error === "too-many-attempts" && (
+        <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+          Too many attempts. Please try again later.
         </p>
       )}
 

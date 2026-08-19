@@ -11,21 +11,27 @@ export default async function HomePage() {
   });
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to the blog</h1>
-      <p className="text-gray-600 mb-8">Recent posts from our writers.</p>
+    <main className="mx-auto max-w-3xl px-4 py-16">
+      <div className="mb-12 border-b border-line pb-8">
+        <h1 className="font-display text-5xl font-semibold text-ink tracking-tight">
+          Blog Platform
+        </h1>
+        <p className="mt-3 font-mono text-xs uppercase tracking-wider text-ink-muted">
+          Writing, worth reading
+        </p>
+      </div>
 
       {recentPosts.length === 0 ? (
-        <p className="text-gray-500">No posts yet.</p>
+        <p className="text-ink-muted">No posts yet.</p>
       ) : (
-        <div className="space-y-6">
+        <div>
           {recentPosts.map((post) => (
             <PostCard
               key={post.id}
               slug={post.slug}
               title={post.title}
               content={post.content}
-              authorName={post.author.name ?? post.author.email}
+              authorName={post.author.name ?? post.author.username}
               authorUsername={post.author.username}
               createdAt={post.createdAt}
             />
@@ -35,7 +41,7 @@ export default async function HomePage() {
 
       <Link
         href="/posts"
-        className="mt-8 inline-block text-sm font-medium text-blue-600 hover:underline"
+        className="mt-8 inline-block font-mono text-xs uppercase tracking-wider text-accent hover:underline"
       >
         View all posts →
       </Link>

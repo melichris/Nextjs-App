@@ -1,7 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { createPost } from "./actions";
+import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Buttons";
+import { FormGroup } from "@/components/ui/FormGroup";
+
+// Disable Server-Side Rendering explicitly for the editor component
+const RichTextEditor = dynamic(() => import("@/components/RichTextEditor"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[350px] bg-bg-secondary border border-border-primary rounded-xl flex items-center justify-center text-text-tertiary font-mono text-xs animate-pulse">
+      Loading workspace layout canvas...
+    </div>
+  ),
+});
 
 function slugify(text: string) {
   return text
@@ -14,6 +29,7 @@ function slugify(text: string) {
 export default function NewPostPage() {
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
+  const [content, setContent] = useState("");
   const [slugEditedManually, setSlugEditedManually] = useState(false);
 
   function handleTitleChange(value: string) {
@@ -24,65 +40,64 @@ export default function NewPostPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">New Post</h1>
+    <main className="section-pad max-w-3xl mx-auto">
+      <Card>
+        <form action={createPost}>
+          <FormGroup
+            title="Compose New Article"
+            description="Type '/' to trigger modern block options. Drag, format, and structure with speed."
+          >
+            <Input
+              label="Article Title"
+              name="title"
+              value={title}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              placeholder="e.g., Block-Based Text Editors in Next.js"
+              required
+            />
 
-      <form action={createPost} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Title
-          </label>
-          <input
-            type="text"
-            name="title"
-            value={title}
-            onChange={(e) => handleTitleChange(e.target.value)}
-            required
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-          />
-        </div>
+            <Input
+              label="URL Slug Custom Path"
+              name="slug"
+              value={slug}
+              onChange={(e) => {
+                setSlug(e.target.value);
+                setSlugEditedManually(true);
+              }}
+              placeholder="e.g., block-text-editors-nextjs"
+              required
+            />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Slug (URL)
-          </label>
-          <input
-            type="text"
-            name="slug"
-            value={slug}
-            onChange={(e) => {
-              setSlug(e.target.value);
-              setSlugEditedManually(true);
-            }}
-            required
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-          />
-        </div>
+            <div className="input-wrapper mb-4">
+              <label className="block font-body text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+                Post Content Body
+              </label>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Content
-          </label>
-          <textarea
-            name="content"
-            rows={8}
-            required
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-          />
-        </div>
+              {/* Dynamic Notion-Style Canvas Editor Component */}
+              <RichTextEditor value={content} onChange={(html) => setContent(html)} />
 
-        <label className="flex items-center gap-2 text-sm text-gray-700">
-          <input type="checkbox" name="published" defaultChecked />
-          Publish immediately
-        </label>
+              {/* The hidden variable that passes compiled HTML safely back to actions.tsx */}
+              <input type="hidden" name="content" value={content} />
+            </div>
 
-        <button
-          type="submit"
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-800"
-        >
-          Create Post
-        </button>
-      </form>
-    </div>
+            <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer select-none py-1">
+              <input
+                type="checkbox"
+                name="published"
+                defaultChecked
+                className="accent-primary-brand h-4 w-4 rounded-sm border-border-secondary"
+              />
+              Publish immediately
+            </label>
+
+            <div className="flex-between pt-4 border-t border-border-primary mt-2">
+              <Button type="submit" variant="primary">
+                Publish Article
+              </Button>
+            </div>
+          </FormGroup>
+        </form>
+      </Card>
+    </main>
   );
 }

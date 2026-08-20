@@ -1,32 +1,163 @@
 @import "tailwindcss";
 
+/* =========================================================
+   1. CSS VARIABLE DEFINITIONS (Dynamic Light/Dark Swapping)
+   ========================================================= */
+@layer base {
+  :root {
+    /* Backgrounds */
+    --bg-primary: #F9FAFB;
+    --bg-secondary: #FFFFFF;
+    --bg-tertiary: #F2F4F7;
+
+    /* Typography */
+    --text-primary: #101828;
+    --text-secondary: #344054;
+    --text-tertiary: #667085;
+    --text-inverse: #FFFFFF;
+
+    /* Borders */
+    --border-primary: #E4E7EC;
+    --border-secondary: #D0D5DD;
+
+    /* Brand Variants */
+    --primary-brand: #7C3AED;
+    --primary-brand-hover: #6927DA;
+    --primary-brand-soft: #F4EBFF;
+
+    /* Statuses */
+    --status-success: #12B76A;
+    --status-warning: #F79009;
+    --status-error: #F04438;
+  }
+
+  .dark {
+    /* Backgrounds */
+    --bg-primary: #020617;
+    --bg-secondary: #0F172A;
+    --bg-tertiary: #111827;
+
+    /* Typography */
+    --text-primary: #ffffff;
+    --text-secondary: #CBD5E1;
+    --text-tertiary: #9CA3AF;
+    --text-inverse: #020617;
+
+    /* Borders */
+    --border-primary: #1F2937;
+    --border-secondary: #374151;
+
+    /* Brand Variants */
+    --primary-brand: #8B5CF6;
+    --primary-brand-hover: #7C3AED;
+    --primary-brand-soft: #2E1065;
+
+    /* Statuses */
+    --status-success: #22C55E;
+    --status-warning: #F59E0B;
+    --status-error: #EF4444;
+  }
+}
+
+/* =========================================================
+   2. TAILWIND V4 THEME REGISTRATION
+   ========================================================= */
 @theme {
+  /* --- TYPOGRAPHY --- */
   --font-display: "Fraunces", ui-serif, serif;
   --font-body: "Inter", ui-sans-serif, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
-  --color-bg: #ffffff;
-  --color-surface: #f8fafc;
-  --color-ink: #0f172a;
-  --color-ink-muted: #64748b;
-  --color-brand: #0f172a;
-  --color-accent: #3b82f6;
-  --color-line: #e2e8f0;
+  /* --- BRAND PALETTE --- */
+  --color-primary-25: #F4EBFF;
+  --color-primary-100: #E9D7FE;
+  --color-primary-300: #B692F6;
+  --color-primary-500: #7C3AED;
+  --color-primary-600: #6927DA;
+  --color-primary-700: #5B21B6;
+
+  /* --- SEMANTIC COLOR MAPPINGS --- */
+  /* Exposes: bg-bg-primary, bg-bg-secondary, bg-bg-tertiary */
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+
+  /* Exposes: text-text-primary, text-text-secondary, text-text-tertiary, text-text-inverse */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-inverse: var(--text-inverse);
+
+  /* Exposes: border-border-primary, border-border-secondary */
+  --color-border-primary: var(--border-primary);
+  --color-border-secondary: var(--border-secondary);
+
+  /* Exposes: bg-brand, text-brand, border-brand, bg-brand-hover, etc. */
+  --color-brand: var(--primary-brand);
+  --color-brand-hover: var(--primary-brand-hover);
+  --color-brand-soft: var(--primary-brand-soft);
+
+  /* Exposes: text-success, bg-error, border-warning, etc. */
+  --color-success: var(--status-success);
+  --color-warning: var(--status-warning);
+  --color-error: var(--status-error);
 }
 
-.dark {
-  --color-bg: #0f172a;
-  --color-surface: #1e293b;
-  --color-ink: #f8fafc;
-  --color-ink-muted: #94a3b8;
-  --color-brand: #f8fafc;
-  --color-accent: #60a5fa;
-  --color-line: #334155;
+/* =========================================================
+   3. GLOBAL UTILITY SHORTCUTS (Tailwind v4 @utility)
+   ========================================================= */
+@utility flex-center {
+  @apply flex items-center justify-center;
 }
 
-body {
-  background-color: var(--color-bg);
-  color: var(--color-ink);
-  font-family: var(--font-body);
-  transition: background-color 0.15s ease, color 0.15s ease;
+@utility flex-between {
+  @apply flex items-center justify-between;
+}
+
+@utility surface-card {
+  @apply bg-bg-secondary border border-border-primary rounded-xl p-6 shadow-xs transition-all duration-200;
+}
+
+@utility section-pad {
+  @apply py-12 md:py-16;
+}
+
+/* =========================================================
+   4. BASE STYLES
+   ========================================================= */
+@layer base {
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  /* Geometric width normalization */
+  main, form, input, textarea, select, .input-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Automatic Typography Grid */
+  h1 {
+    font-family: var(--font-display);
+    @apply text-4xl font-semibold tracking-tight mb-4;
+    color: var(--text-primary);
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    @apply text-2xl font-semibold tracking-tight mb-3;
+    color: var(--text-primary);
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    @apply text-xl font-medium mb-2;
+    color: var(--text-primary);
+  }
 }

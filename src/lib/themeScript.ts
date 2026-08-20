@@ -10,5 +10,5 @@ export const themeInitScript = `(function () {
     if (theme === "dark" || (!theme && prefersDark)) {
       document.documentElement.classList.add("dark");
     }
-  } catch (e) {}
+  } catch {}
 })()`;

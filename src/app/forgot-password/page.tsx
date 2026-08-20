@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
         <div>
           <button
             type="submit"
-            className="flex w-full justify-center rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-accent/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="flex w-full justify-center rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-accent/80  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Reset Password
           </button>

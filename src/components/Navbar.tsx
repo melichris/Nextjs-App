@@ -8,7 +8,7 @@ export async function Navbar() {
 
   return (
     <header className="border-b border-line bg-bg">
-      <div className="mx-auto max-w-[1443px] px-4 py-6 flex items-center justify-between">
+      <div className="mx-auto max-w-3xl px-4 py-6 flex items-center justify-between">
         <Link href="/" className="font-display text-2xl font-semibold text-ink tracking-tight">
           Blog Platform
         </Link>

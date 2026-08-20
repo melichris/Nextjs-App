@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { PostCard } from "@/components/PostCard";
-import { AppLink } from "@/components/ui/AppLink";
 
 export default async function HomePage() {
   const recentPosts = await prisma.post.findMany({
@@ -12,12 +11,12 @@ export default async function HomePage() {
   });
 
   return (
-    <main className="mx-auto max-w-full px-4 py-16">
+    <main className="mx-auto max-w-3xl px-4 py-16">
       <div className="mb-12 border-b border-line pb-8">
-        <h1 className="font-display text-5xl font-semibold text-text-primary tracking-tight">
+        <h1 className="font-display text-5xl font-semibold text-ink tracking-tight">
           Blog Platform
         </h1>
-        <p className="mt-3 font-mono text-xs uppercase tracking-wider text-text-tertiary">
+        <p className="mt-3 font-mono text-xs uppercase tracking-wider text-ink-muted">
           Writing, worth reading
         </p>
       </div>
@@ -33,15 +32,19 @@ export default async function HomePage() {
               title={post.title}
               content={post.content}
               authorName={post.author.name ?? post.author.username}
+              authorUsername={post.author.username}
               createdAt={post.createdAt}
             />
           ))}
         </div>
       )}
 
-      <AppLink href="/posts" variant="arrow" className="mt-8">
+      <Link
+        href="/posts"
+        className="mt-8 inline-block font-mono text-xs uppercase tracking-wider text-accent hover:underline"
+      >
         View all posts →
-      </AppLink>
+      </Link>
     </main>
   );
 }
